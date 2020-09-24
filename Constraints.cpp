@@ -42,21 +42,30 @@ math::Vector Constraints::Speed(vector<math::Transform> reFrames,
 			}
 		}	
 	}
+
 	return maxVelocity;
 }
 
-math::Vector Constraints::Position(vector<math::Vector> solutions)
+double Constraints::Position(mdl::Kinematic* kinematics, 
+	vector<math::Vector> solutions)
 {
-	math::Vector maxAngles = math::Vector(solutions[0].size());
-	maxAngles.setZero();
+	double maxDeviation = 0;
+	math::Matrix jacobian = math::Matrix();
+	math::Vector theta = math::Vector(kinematics->getDof());
+	theta.setOnes();
+	math::Vector deviation = math::Vector(6);
 
 	for (int i = 0; i < solutions.size(); i++) {
-		for (int j = 0; j < maxAngles.size(); j++) {
-			if (abs(solutions[i](j)) > maxAngles(j)) {
-				maxAngles(j) = abs(solutions[i](j));
-			}
+
+		Manipulator::FKRL(kinematics, solutions[i]);
+		jacobian = kinematics->getJacobian();
+		deviation = jacobian * theta;
+		if (maxDeviation < deviation.maxCoeff()) {
+			cout << deviation.transpose() << endl;
+			maxDeviation = deviation.maxCoeff();
+			cout << maxDeviation;
 		}
-			
 	}
-	return maxAngles;
+
+	return maxDeviation;
 }

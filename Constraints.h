@@ -17,6 +17,6 @@ public:
 		vector<math::Transform>);
 	static math::Vector Speed(vector<math::Transform>, vector<math::Vector>,
 		double);
-	static math::Vector Position(vector<math::Vector>);
+	static double Position(mdl::Kinematic*, vector<math::Vector>);
 };
 

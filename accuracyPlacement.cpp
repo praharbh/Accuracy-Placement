@@ -24,6 +24,8 @@
 #include <rl/math/Unit.h>
 #include <rl/mdl/NloptInverseKinematics.h>
 
+#include <nlopt.hpp>
+
 #include "Manipulator.h"
 #include "Data.h"
 #include "Read.h"
@@ -72,7 +74,7 @@ int main(int argc, char **argv) {
 	cout << solutions.size() << endl;
 
 	cout << Constraints::Speed(reFrames, solutions, 0.050).transpose() * 180 / PI << endl;
-	cout << Constraints::Position(solutions).transpose() * 180 / PI << endl;
+	cout << Constraints::Position(kinematics, solutions) << endl;
 
 	while (robot->step(timeStep*2) != -1) {
 		continue;

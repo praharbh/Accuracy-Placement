@@ -49,12 +49,12 @@ vector<math::Transform> Read::CSV(string path)
     return frames;
 }
 
-vector<math::Transform> Read::Relocate(math::Transform loaction, 
+vector<math::Transform> Read::Relocate(math::Transform location, 
     vector<math::Transform> frames)
 {
     vector<math::Transform> reFrames;
     for (int i = 0; i < frames.size(); i++) {
-        reFrames.push_back(loaction * frames[i]);
+        reFrames.push_back(location * frames[i]);
     }
     return reFrames;
 }
