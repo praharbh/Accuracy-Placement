@@ -15,10 +15,9 @@
 using namespace std;
 
 class Optimization
-{
+{	
 public:
-	vector<math::Vector> AMPlace(mdl::Kinematic*,
+	math::Vector AMPlace(mdl::Kinematic*,
 		vector<math::Transform>, vector<Motor*>);
-	//double myfunc(unsigned, const double*, double*, void*);
 };
 

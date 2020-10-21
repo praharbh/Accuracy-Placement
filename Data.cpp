@@ -4,6 +4,7 @@
 
 #include "Data.h"
 
+// Function to obatin joint names of robot
 vector<string> Data::JointNames(string robotName)
 {
     vector<string> names = vector<string>();
@@ -28,6 +29,7 @@ vector<string> Data::JointNames(string robotName)
     
 }
 
+// Function to obatin sensor names of robot
 vector<string> Data::SensorNames(string robotName)
 {
 	vector<string> names = vector<string>();
@@ -54,6 +56,7 @@ vector<string> Data::SensorNames(string robotName)
 }
 
 /*
+// Obsolete function to create kinematic chain of robot
 Chain Data::Kinematics(string robotName)
 {
 	Chain robotChain = Chain();
@@ -105,6 +108,7 @@ Chain Data::Kinematics(string robotName)
 	
 }
 
+// Obsolete function to obatin joint limits of robot
 JntArray* Data::JointLimits(string robotName)
 {
 	JntArray limits[2];

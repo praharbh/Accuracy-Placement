@@ -15,8 +15,10 @@ static class Constraints
 public:
 	static vector<math::Vector> Reachability(mdl::Kinematic*, 
 		vector<math::Transform>);
-	static math::Vector Speed(vector<math::Transform>, vector<math::Vector>,
+	static double Speed(vector<math::Transform>, vector<math::Vector>,
 		double);
 	static double Position(mdl::Kinematic*, vector<math::Vector>);
+	static double MaxXe(mdl::Kinematic*, vector<math::Transform>,
+		vector<math::Vector>, double);
 };
 

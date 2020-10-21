@@ -1,5 +1,6 @@
 #include "Manipulator.h"
 
+// Function to obtain the joint motors of the robot
 vector<Motor*> Manipulator::JointMotors(Robot *robot, vector<string> jointNames)
 {
 
@@ -15,6 +16,7 @@ vector<Motor*> Manipulator::JointMotors(Robot *robot, vector<string> jointNames)
 
 }
 
+// Function to obtain the joint sensors of the robot
 vector<PositionSensor*> Manipulator::JointSensors(Robot *robot, 
 	vector<string> sensorNames, int timeStep)
 {
@@ -29,6 +31,7 @@ vector<PositionSensor*> Manipulator::JointSensors(Robot *robot,
 	return sensors;
 }
 
+// Function the simulate the robot at given joint angles
 void Manipulator::Simulate(vector<Motor*> motors, math::Vector jointPositions)
 {
 	for (int i = 0; i < motors.size(); i++) {
@@ -38,6 +41,7 @@ void Manipulator::Simulate(vector<Motor*> motors, math::Vector jointPositions)
 	}
 }
 
+// Function to calculate the forward kinematics of robot
 math::Transform Manipulator::FKRL(mdl::Kinematic* kinematics, math::Vector angles)
 {
 	kinematics->setPosition(angles);
@@ -48,6 +52,8 @@ math::Transform Manipulator::FKRL(mdl::Kinematic* kinematics, math::Vector angle
 	return frame;
 }
 
+
+// Function to calculate the inverse kinematics of the robot
 bool Manipulator::IKRL(mdl::Kinematic* kinematics, math::Transform frame)
 {
 	math::Vector angles = kinematics->getPosition();
@@ -55,10 +61,11 @@ bool Manipulator::IKRL(mdl::Kinematic* kinematics, math::Transform frame)
 	ikSolver.duration = std::chrono::seconds(1);
 	ikSolver.goals.push_back(make_pair(frame, 0));
 	bool result = ikSolver.solve();
-	//angles = kinematics->getPosition();
 	return result;
 } 
 
+
+// Function to poll the joint sensors
 math::Vector Manipulator::Poll(vector<PositionSensor*> sensors)
 {
 	math::Vector angles = math::Vector(sensors.size());
@@ -68,6 +75,7 @@ math::Vector Manipulator::Poll(vector<PositionSensor*> sensors)
 	return angles;
 }
 
+// Function to generate a random rachable joint angle
 math::Vector Manipulator::Random(vector<Motor*> motors)
 {
 	math::Vector randSol;
@@ -84,7 +92,7 @@ math::Vector Manipulator::Random(vector<Motor*> motors)
 	return randSol;
 }
 
-/*
+/* // Obsolete function for forward kinematics
 Frame Manipulator::FKKDL(Chain robotChain, JntArray jointPosition){
 
 	vector<Frame> cartPosition = vector<Frame>(robotChain.getNrOfSegments());//Frame::Identity();
@@ -104,6 +112,7 @@ Frame Manipulator::FKKDL(Chain robotChain, JntArray jointPosition){
 
 }
 
+// Obsolete function for inverse kinematics
 JntArray Manipulator::IKKDL(JntArray inputPosition, Chain robotChain, Frame cartPosition)
 {
 	JntArray outputPosition = JntArray(robotChain.getNrOfJoints());

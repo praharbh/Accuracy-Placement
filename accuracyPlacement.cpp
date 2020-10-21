@@ -30,6 +30,7 @@
 #include "Data.h"
 #include "Read.h"
 #include "Constraints.h"
+#include "Optimization.h"
 
 using namespace std;
 using namespace webots;
@@ -38,65 +39,70 @@ using namespace rl;
 
 int main(int argc, char **argv) {
 	
-	//Supervisor* robot = new Supervisor();
+	// Initialize robot or supervisor
+	// Supervisor* robot = new Supervisor();
 	Robot *robot = new Robot();
 	int timeStep = (int)robot->getBasicTimeStep();
 
+	// Get joint motors
 	vector<string> jointNames = Data::JointNames(robot->getName());
 	vector<Motor*> motors = Manipulator::JointMotors(robot, jointNames);
 	
+	// Get joint sensors
 	vector<string> sensorNames = Data::SensorNames(robot->getName());
 	vector<PositionSensor*> sensors = Manipulator::JointSensors
 		(robot, sensorNames, timeStep);
 
 	cout << "Turning on controller for " + robot->getName() << endl;
 
+	// Get URDF
 	mdl::UrdfFactory factory;
-	mdl::Kinematic* kinematics = dynamic_cast<mdl::Kinematic*>(factory.create("C:/Bhatt_Work_Drive_Advanced/ICRA 2021/URDF/IRB4600.xml"));
+	mdl::Kinematic* kinematics = dynamic_cast<mdl::Kinematic*>
+		(factory.create("C:/Bhatt_Work_Drive_Advanced/ICRA 2021/URDF/IRB4600.xml"));
 	
-	vector<math::Transform> frames = Read::CSV("C:/Bhatt_Work_Drive_Advanced/ICRA 2021/CSV/vase630.csv");
+	// Obtain path
+	vector<math::Transform> frames = 
+		Read::CSV("C:/Bhatt_Work_Drive_Advanced/ICRA 2021/CSV/vase630.csv");
 
-	math::Vector solution(6);
+	// Testing part placement constraint at robot home location
+	math::Vector solution(kinematics->getDof());
 	solution << 0, 0, 0, 0, 90, 0;
 	solution *= math::DEG2RAD;
 	math::Transform home = Manipulator::FKRL(kinematics, solution);
-	
 	math::Transform location = math::Transform();
 	location.setIdentity();
 	location.translation() = home.translation();
 	vector<math::Transform> reFrames = Read::Relocate(location, frames);
-	cout << frames.size() << endl;
-	//math::Vector solution = Manipulator::IKRL(kinematics, t);
+	vector<math::Vector> solutions = Constraints::Reachability(kinematics, reFrames);
+	cout << Constraints::MaxXe(kinematics, reFrames, solutions, 0.020) << " m" << endl;
+
+	// Optimizing part placement 
+	Optimization optimize;
+	location.translation() = 
+		Manipulator::FKRL(kinematics, optimize.AMPlace(kinematics, frames, motors)).translation();
+	cout << "optimized" << endl;
+	reFrames = Read::Relocate(location, frames);
+	solutions = Constraints::Reachability(kinematics, reFrames);
+	cout << Constraints::MaxXe(kinematics, reFrames, solutions, 0.010) << " m" << endl;
+
+	// Simulating the first point
 	int i = 0;
 	Manipulator::Simulate(motors, solution);
 
-	vector<math::Vector> solutions = Constraints::Reachability(kinematics, reFrames);
-	cout << solutions.size() << endl;
 
-	cout << Constraints::Speed(reFrames, solutions, 0.050).transpose() * 180 / PI << endl;
-	cout << Constraints::Position(kinematics, solutions) << endl;
-
+	// Simulating the entire path 
 	while (robot->step(timeStep*2) != -1) {
-		continue;
 	
-		//cout << Manipulator::Poll(sensors) << endl << endl;
-		//cout << solution << endl;
 		if (i < solutions.size()) {
 			cout << i << endl;
-			//frames[i].translation() += t.translation();
-			/*if (Manipulator::IKRL(kinematics, reFrames[i])) {
-				solution = kinematics->getPosition();
-				Manipulator::Simulate(motors, solution);
-			}*/
 			Manipulator::Simulate(motors, solutions[i]);
 			i++;
 		}
 		
 	}
 
+	// Exit and cleanup
 	cout << "Execution ended." << endl;
-
-	// Enter here exit cleanup code.
 	delete robot;
 	return 0;
 }

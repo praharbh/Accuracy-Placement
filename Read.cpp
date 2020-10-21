@@ -1,5 +1,6 @@
 #include "Read.h"
 
+// Function to read the path from a csv file
 vector<math::Transform> Read::CSV(string path)
 {
     vector<math::Transform> frames = vector<math::Transform>();
@@ -38,13 +39,13 @@ vector<math::Transform> Read::CSV(string path)
             frames.push_back(frame);
         } 
         /*else if (row.size() == 12) {
-            matrix(0, 0) = stod(row[3]); matrix(0, 1) = stod(row[6]); matrix(0, 2) = stod(row[9]);
-            matrix(1, 0) = stod(row[4]); matrix(1, 1) = stod(row[7]); matrix(1, 2) = stod(row[10]);
-            matrix(2, 0) = stod(row[5]); matrix(2, 1) = stod(row[8]); matrix(2, 2) = stod(row[11]);
+            matrix(0, 0) = row[3]; matrix(0, 1) = row[6]; matrix(0, 2) = row[9];
+            matrix(1, 0) = row[4]; matrix(1, 1) = row[7]; matrix(1, 2) = row[10];
+            matrix(2, 0) = row[5]; matrix(2, 1) = row[8]; matrix(2, 2) = row[11];
             frame = math::Transform(matrix);
-            frame.translation() << stod(row[0]) / 1000, stod(row[1]) / 1000, stod(row[2]) / 1000;
+            frame.translation() << row[0] / 1000, row[1] / 1000, row[2] / 1000;
             frames.push_back(frame);
-        } */  
+        } */
     }
     return frames;
 }
